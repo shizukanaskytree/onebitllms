@@ -32,7 +32,7 @@ python examples/sft.py \
 import argparse
 
 from datasets import load_dataset
-from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from transformers.models.auto.modeling_auto import MODEL_FOR_IMAGE_TEXT_TO_TEXT_MAPPING_NAMES
 
 from trl import (
@@ -63,6 +63,8 @@ def main(script_args, training_args, model_args):
         quantization_config=quantization_config,
     )
     model_id = model_args.model_name_or_path
+    if "microsoft" in model_id:
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=False, load_in_8bit=False)
 
     # Use the instruct tokenizer for fine-tuning
     if "Falcon-E" in model_id and "Base" in model_id:
